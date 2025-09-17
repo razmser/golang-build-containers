@@ -6,9 +6,9 @@
 
 FROM buildpack-deps:buster-scm AS build
 
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 
-ENV GOLANG_VERSION 1.24.7
+ENV GOLANG_VERSION=1.24.7
 
 RUN set -eux; \
 	now="$(date '+%s')"; \
@@ -126,14 +126,14 @@ RUN set -eux; \
 	fi; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV GOLANG_VERSION 1.24.7
+ENV GOLANG_VERSION=1.24.7
 
 # don't auto-upgrade the gotoolchain
 # https://github.com/docker-library/golang/issues/472
 ENV GOTOOLCHAIN=local
 
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 # (see notes above about "COPY --link")
 COPY --from=build --link /target/ /
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"

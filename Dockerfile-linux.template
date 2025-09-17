@@ -11,16 +11,16 @@ FROM alpine:{{ alpine_version }} AS build
 FROM buildpack-deps:{{ env.variant }}-scm AS build
 {{ ) end -}}
 
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 
 {{ if env.version != "tip" then ( -}}
-ENV GOLANG_VERSION {{ .version }}
+ENV GOLANG_VERSION={{ .version }}
 {{ ) else ( -}}
 COPY --from=golang:{{ env.variant }} /usr/local/go /usr/local/goroot-bootstrap
 
 # {{ .version }}: https://github.com/golang/go/tree/{{ .commit.version }}
 ARG GOLANG_COMMIT={{ .commit.version | @sh }}
-ENV GOLANG_COMMIT $GOLANG_COMMIT
+ENV GOLANG_COMMIT=$GOLANG_COMMIT
 {{ ) end -}}
 
 {{
@@ -239,15 +239,15 @@ RUN set -eux; \
 {{ ) end -}}
 
 {{ if env.version != "tip" then ( -}}
-ENV GOLANG_VERSION {{ .version }}
+ENV GOLANG_VERSION={{ .version }}
 
 {{ ) else "" end -}}
 # don't auto-upgrade the gotoolchain
 # https://github.com/docker-library/golang/issues/472
 ENV GOTOOLCHAIN=local
 
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 # (see notes above about "COPY --link")
 COPY --from=build --link /target/ /
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"

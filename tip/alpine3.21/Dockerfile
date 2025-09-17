@@ -6,13 +6,13 @@
 
 FROM alpine:3.21 AS build
 
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 
 COPY --from=golang:alpine3.21 /usr/local/go /usr/local/goroot-bootstrap
 
 # tip-20250912: https://github.com/golang/go/tree/ac803b5949f6dbc5bfa559afe506d35f9e1b3195
 ARG GOLANG_COMMIT='ac803b5949f6dbc5bfa559afe506d35f9e1b3195'
-ENV GOLANG_COMMIT $GOLANG_COMMIT
+ENV GOLANG_COMMIT=$GOLANG_COMMIT
 
 RUN set -eux; \
 	now="$(date '+%s')"; \
@@ -118,8 +118,8 @@ RUN apk add --no-cache ca-certificates
 # https://github.com/docker-library/golang/issues/472
 ENV GOTOOLCHAIN=local
 
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 # (see notes above about "COPY --link")
 COPY --from=build --link /target/ /
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
