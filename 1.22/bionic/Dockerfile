@@ -6,9 +6,9 @@
 
 FROM buildpack-deps:bionic-scm AS build
 
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 
-ENV GOLANG_VERSION 1.22.12
+ENV GOLANG_VERSION=1.22.12
 
 RUN set -eux; \
 	now="$(date '+%s')"; \
@@ -114,16 +114,26 @@ RUN set -eux; \
 		make \
 		pkg-config \
 	; \
+# go depends on "gold" explicitly on arm64
+# https://github.com/docker-library/golang/issues/570 (go depends on "gold" explicitly on arm64)
+# https://github.com/golang/go/issues/22040
+# ... and as of trixie, "gold" is removed from the "binutils" package:
+# > WARNING: gold is being removed from binutils, and is deprecated upstream.
+# (and available as "binutils-gold" which is also a virtual on bookworm so we can reasonably be explicit everywhere)
+	dpkgArch="$(dpkg --print-architecture)"; \
+	if [ "$dpkgArch" = 'arm64' ]; then \
+		apt-get install -y --no-install-recommends binutils-gold; \
+	fi; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV GOLANG_VERSION 1.22.12
+ENV GOLANG_VERSION=1.22.12
 
 # don't auto-upgrade the gotoolchain
 # https://github.com/docker-library/golang/issues/472
 ENV GOTOOLCHAIN=local
 
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 # (see notes above about "COPY --link")
 COPY --from=build --link /target/ /
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
