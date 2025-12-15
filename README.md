@@ -1,9 +1,6 @@
-# https://github.com/razmser/golang-build-containers
+## ⚠️ DEPRECATED
 
-## Maintained by: @razmser
+This repository is no longer maintained. Please use the [original golang repository](https://github.com/docker-library/golang) instead.
 
-Fork of https://github.com/docker-library/golang with additional base systems.
-You might want to use it for building go program on a specific Ubuntu version to ensure compatibility for binaries that use dynamic linking.
+The original goal was to provide Docker images for older Go versions and older distributions while they were needed for some of my projects. That need no longer exists.
 
-## Note
-master branch is pereodically **rebased** onto original repository
